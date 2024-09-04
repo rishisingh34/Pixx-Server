@@ -69,6 +69,9 @@ const getAllPosts = async (req, res) => {
           isBookmarked: 1,
         },
       },
+      {
+        $sort: { createdAt: -1 } 
+      }
     ]);
 
     return res.status(200).json({ posts });
@@ -76,6 +79,7 @@ const getAllPosts = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 
 
 

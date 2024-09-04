@@ -12,7 +12,11 @@ const postSchema = new mongoose.Schema({
   user : {
     type : mongoose.Schema.Types.ObjectId , 
     ref : 'User'
+  },
+  createdAt : {
+    type : Date , 
+    default : Date.now
   }
-}, { createdAt : true });
+}, { versionKey : false });
 
 module.exports = mongoose.model('Post',postSchema);
