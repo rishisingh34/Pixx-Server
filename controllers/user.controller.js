@@ -40,41 +40,15 @@ const getUserPosts = async (req, res) => {
 
 const getAllPosts = async (req, res) => {
   try {
-    const userId = req.user.id;
-
-    const posts = await Post.aggregate([
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'user',
-          foreignField: '_id',
-          as: 'userDetails',
-        },
-      },
-      { $unwind: '$userDetails' },
-      {
-        $addFields: {
-          isBookmarked: {
-            $in: ['$_id', (await User.findById(userId).select('bookmarks')).bookmarks],
-          },
-        },
-      },
-      {
-        $project: {
-          id: '$_id',
-          title: 1,
-          thumbnail: 1,
-          username: '$userDetails.username',
-          avatar: '$userDetails.avatar',
-          isBookmarked: 1,
-        },
-      },
-      {
-        $sort: { createdAt: -1 } 
-      }
-    ]);
-
-    return res.status(200).json({ posts });
+    const posts = await Post.find().sort({ createdAt: -1 }).populate('user', 'username avatar');
+    const formattedPosts = posts.map(post => ({
+      id: post.id,
+      title: post.title,
+      thumbnail: post.thumbnail,
+      username: post.user.username,
+      avatar: post.user.avatar
+    }));
+    return res.status(200).json({ posts: formattedPosts });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
