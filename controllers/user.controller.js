@@ -40,14 +40,22 @@ const getUserPosts = async (req, res) => {
 
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 }).populate('user', 'username avatar');
-    const formattedPosts = posts.map(post => ({
-      id: post.id,
-      title: post.title,
-      thumbnail: post.thumbnail,
-      username: post.user.username,
-      avatar: post.user.avatar
-    }));
+    const user = await User.findById(req.user.id).populate('bookmarks');
+    const posts = await Post.find().populate( 'user', 'username avatar');
+    const formattedPosts = posts.map((post) => {
+      const isBookmarked = user.bookmarks.some(
+        (bookmark) => bookmark._id.toString() === post._id.toString()
+      );
+      return {
+        id: post.id,
+        title: post.title,
+        thumbnail: post.thumbnail,
+        username: post.user.username,
+        avatar: post.user.avatar,
+        isBookmarked, 
+      };
+    });
+
     return res.status(200).json({ posts: formattedPosts });
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -143,8 +151,10 @@ const addBookmark = async (req, res) => {
   try {
     const { postId } = req.body;
     const user = await User.findById(req.user.id);
-    user.bookmarks.push(postId);
-    await user.save();
+    if(!user.bookmarks.includes(postId)){
+      user.bookmarks.push(postId);
+      await user.save();
+    }
     return res.status(200).json({ message: "Post bookmarked successfully" });
   } catch (err) {
     return res.status(500).json({ error: err.message });

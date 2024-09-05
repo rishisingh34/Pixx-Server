@@ -29,9 +29,10 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Post',
+      unique : true 
     },
   ],
-})
+}, { versionKey : false })
 
 userSchema.pre('save', async function(next){
   if(!this.isModified('password')){
