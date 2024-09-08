@@ -18,7 +18,7 @@ router.post('/create', auth,upload.single('thumbnail'),  createPost);
 router.get('/posts/all',auth,  getAllPosts);
 router.get('/posts/latest', getLatestPosts);
 router.get('/info', auth , getCurrentUser); 
-router.get('/posts/search', searchPosts); 
+router.get('/posts/search',auth , searchPosts); 
 router.post('/bookmark/add', auth , addBookmark);
 router.post('/bookmark/remove', auth , removeBookmark);
 router.get('/bookmarks', auth , getBookmarks); 
