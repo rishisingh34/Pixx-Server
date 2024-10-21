@@ -7,7 +7,7 @@ const signToken = (id) => {
     const payload = {};
     const secret = ACCESS_TOKEN_SECRET;
     const options = {
-      expiresIn: "10d",
+      expiresIn: "365d",
       issuer: "pixx",
       audience: id,
     };
